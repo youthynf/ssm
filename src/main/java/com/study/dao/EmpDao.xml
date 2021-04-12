@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace:编写接口的全类名，就是告诉要实现该配置文件是哪个接口的具体实现-->
+<mapper namespace="com.mashibing.dao.EmpDao">
+    <!--    <cache></cache>-->
+    <!--    <cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>-->
+    <!--
+    select:表示这个操作是一个查询操作
+    id表示的是要匹配的方法的名称
+    resultType:表示返回值的类型，查询操作必须要包含返回值的类型
+    #{属性名}：表示要传递的参数的名称
+    -->
+    <select id="findEmpByEmpno" resultType="emp">
+        select * from emp where empno = #{empno}
+    </select>
+    <!--增删改查操作不需要返回值，增删改返回的是影响的行数，mybatis会自动做判断-->
+    <insert id="insertEmp">
+        insert into emp(empno,ename) values(#{empno},#{ename})
+    </insert>
+    <update id="updateEmp">
+        update emp set ename=#{ename} where empno = #{empno}
+    </update>
+
+
+    <delete id="deleteEmp">
+        delete from emp where empno = #{empno}
+    </delete>
+
+    <!--
+    当查询语句中包含多个参数的是，如果使用#{属性名称}就无法获取具体的值了，那么应该如何使用呢？
+        下面就是mybatis的参数传递方式
+        1、如果是单个参数，
+            基本类型：使用#{随便写}
+            引用类型：使用#{类的属性名称}
+        2、多个参数：
+            当查询的时候传入多个参数的时候，就无法简单的通过#{参数名}来获取值了，
+            只能通过arg0,arg1...或者param1,param2等方式来获取值
+            原因就在于，mybatis在传入多个参数的时候，会将这些参数封装到一个map中，此时map中的key就是
+            arg0,arg1,param1,param2这些值，但是很明显，这样的传值方式不是很友好，没有办法根据参数的名称来
+            获取具体的值，因此可以使用如下的方式来指定参数的key是什么
+            Emp selectEmpByNoAndName(@Param("empno") Integer empno, @Param("ename") String ename);
+                也就是通过@Param来指定存入map中的key值是什么
+        3、使用map来传递参数：
+                依然是直接使用#{key}来获取具体的属性值
+    -->
+
+    <!--
+        当使用#{}来获取值的时候会发现打印的sql语句如下：
+            select * from emp where empno=? and ename=?
+        当使用${}来获取值的时候会发现打印的sql语句如下：
+            select * from emp where empno=7369 and ename='SMITH'
+        通过刚刚的案例大家已经发现了存在的问题了，
+        使用#{}方式进行取值：采用的是参数预编译的方式，参数的位置使用？进行替代，不会出现sql注入的问题
+        使用${}方式进行取值：采用的是直接跟sql语句进行拼接的方式
+    -->
+    <select id="selectEmpByNoAndName" resultType="com.mashibing.bean.Emp">
+        select * from ${t} where empno=${empno} and ename=${ename}
+    </select>
+
+    <select id="selectEmpByNoAndName2" resultType="com.mashibing.bean.Emp">
+        select * from emp where empno=#{empno} and ename=#{ename}
+    </select>
+
+    <!--当返回值的结果是集合的时候，返回值的类型依然写的是集合中具体的类型-->
+    <select id="selectAllEmp" resultType="com.mashibing.bean.Emp">
+        select  * from emp
+    </select>
+
+    <!--在查询的时候可以设置返回值的类型为map，当mybatis查询完成之后会把列的名称作为key
+    列的值作为value，转换到map中
+    -->
+    <select id="selectEmpByEmpReturnMap" resultType="map">
+        select * from emp where empno = #{empno}
+    </select>
+
+    <!--注意，当返回的结果是一个集合对象的是，返回值的类型一定要写集合具体value的类型
+    同时在dao的方法上要添加@MapKey的注解，来设置key是什么结果
+    @MapKey("empno")
+    Map<Integer,Emp> getAllEmpReturnMap();-->
+    <select id="getAllEmpReturnMap" resultType="com.mashibing.bean.Emp">
+        select * from emp
+    </select>
+
+    <!--再做查询的时候，有时候需要关联其他对象，因此需要使用关联查询
+    可以通过下面自定义结果集的方式实现
+    -->
+    <select id="selectEmpAndDept" resultMap="empDept">
+        select * from emp left join dept on emp.deptno = dept.deptno where empno = #{empno};
+    </select>
+    <!--<resultMap id="empDept" type="com.mashibing.bean.Emp">
+        <id column="empno" property="empno"></id>
+        <result column="ename" property="ename"></result>
+        <result column="job" property="job"></result>
+        <result column="mgr" property="mgr"></result>
+        <result column="hiredate" property="hiredate"></result>
+        <result column="sal" property="sal"></result>
+        <result column="comm" property="common"></result>
+        <result column="deptno" property="dept.deptno"></result>
+        <result column="dname" property="dept.dname"></result>
+        <result column="loc" property="dept.loc"></result>
+    </resultMap>-->
+
+    <!--在mybatis中还提供了一种简单的形式，使用association标签可以搞定
+    -->
+    <resultMap id="empDept" type="com.mashibing.bean.Emp">
+        <id column="empno" property="empno"></id>
+        <result column="ename" property="ename"></result>
+        <result column="job" property="job"></result>
+        <result column="mgr" property="mgr"></result>
+        <result column="hiredate" property="hiredate"></result>
+        <result column="sal" property="sal"></result>
+        <result column="comm" property="common"></result>
+        <association property="dept" javaType="com.mashibing.bean.Dept">
+            <id column="deptno" property="deptno"></id>
+            <result column="dname" property="dname"></result>
+            <result column="loc" property="loc"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectEmpAndDeptBySimple" resultMap="simpleEmpAndDept">
+        select * from emp where empno = #{empno}
+    </select>
+    <resultMap id="simpleEmpAndDept" type="com.mashibing.bean.Emp">
+        <id column="empno" property="empno"></id>
+        <result column="ename" property="ename"></result>
+        <result column="job" property="job"></result>
+        <result column="mgr" property="mgr"></result>
+        <result column="hiredate" property="hiredate"></result>
+        <result column="sal" property="sal"></result>
+        <result column="comm" property="common"></result>
+        <association property="dept" select="com.mashibing.dao.DeptDao.getDeptAndEmpsBySimple" column="deptno" fetchType="eager">
+        </association>
+    </resultMap>
+
+    <select id="selectEmpByStep" resultType="com.mashibing.bean.Emp">
+        select * from emp where deptno = #{deptno}
+    </select>
+
+    <!-- <select id="getEmpByCondition" resultType="com.mashibing.bean.Emp">
+         select * from emp
+         <where>
+             <if test="empno!=null">
+                 empno > #{empno}
+             </if>
+             <if test="ename!=null">
+                 and ename like #{ename}
+             </if>
+             <if test="sal!=null">
+                 and sal > #{sal}
+             </if>
+         </where>-->
+    <!--
+    trim截取字符串：
+    prefix：前缀，为sql整体添加一个前缀
+    prefixOverrides:去除整体字符串前面多余的字符
+    suffixOverrides:去除后面多余的字符串
+    -->
+    <select id="getEmpByCondition" resultType="com.mashibing.bean.Emp">
+        select * from emp
+
+        <trim prefix="where" prefixOverrides="and" suffixOverrides="and">
+            <if test="empno!=null">
+                empno > #{empno} and
+            </if>
+            <if test="ename!=null">
+                ename like #{ename} and
+            </if>
+            <if test="sal!=null">
+                sal > #{sal} and
+            </if>
+        </trim>
+    </select>
+
+    <!--foreach是对集合进行遍历
+    collection="deptnos"  指定要遍历的集合
+    close="" 表示以什么结束
+    index="" 给定一个索引值
+    item=""  遍历的每一个元素的值
+    open=""  表示以什么开始
+    separator="" 表示多个元素的分隔符
+    -->
+    <select id="getEmpByDeptnos" resultType="Emp">
+        select * from emp where deptno in
+        <foreach collection="deptnos" close=")" index="idx" item="deptno" open="(" separator=",">
+            #{deptno}
+        </foreach>
+    </select>
+
+    <select id="getEmpByConditionChoose" resultType="com.mashibing.bean.Emp">
+        select * from emp
+        <where>
+            <choose>
+                <when test="empno!=null">
+                    empno > #{empno}
+                </when>
+                <when test="ename!=null">
+                    ename like #{ename}
+                </when>
+                <when test="sal!=null">
+                    sal > #{sal}
+                </when>
+                <otherwise>
+                    1=1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <update id="updateEmpByEmpno">
+        update emp
+        <set>
+            <if test="empno!=null">
+                empno=#{empno},
+            </if>
+            <if test="ename!=null">
+                ename = #{ename},
+            </if>
+            <if test="sal!=null">@
+                sal = #{sal}
+            </if>
+        </set>
+        <where>
+            empno = #{empno}
+        </where>
+    </update>
+
+</mapper>
