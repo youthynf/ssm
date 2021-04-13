@@ -12,7 +12,7 @@
     resultType:表示返回值的类型，查询操作必须要包含返回值的类型
     #{属性名}：表示要传递的参数的名称
     -->
-    <select id="findEmpByEmpno" resultType="emp">
+    <select id="findEmpByEmpno" resultType="com.study.bean.Emp">
         select * from emp where empno = #{empno}
     </select>
     <!--增删改查操作不需要返回值，增删改返回的是影响的行数，mybatis会自动做判断-->
