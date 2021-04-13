@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mashibing.dao.DeptDao">
+<mapper namespace="com.study.dao.DeptDao">
     <!--定义查询集合元素-->
     <select id="getDeptAndEmps" resultMap="deptEmp">
         select * from dept left join emp on dept.deptno = emp.deptno where dept.deptno=#{deptno}
     </select>
-    <resultMap id="deptEmp" type="com.mashibing.bean.Dept">
+    <resultMap id="deptEmp" type="com.study.bean.Dept">
         <id property="deptno" column="deptno"></id>
         <result property="dname" column="dname"></result>
         <result property="loc" column="loc"></result>
@@ -15,7 +15,7 @@
             property：指定集合的属性
             ofType:指定集合中的元素类型
         -->
-        <collection property="emps" ofType="com.mashibing.bean.Emp">
+        <collection property="emps" ofType="com.study.bean.Emp">
             <id property="empno" column="empno"></id>
             <result column="ename" property="ename"></result>
             <result column="job" property="job"></result>
@@ -26,14 +26,14 @@
         </collection>
     </resultMap>
 
-    <select id="getDeptAndEmpsBySimple" resultType="com.mashibing.bean.Dept">
+    <select id="getDeptAndEmpsBySimple" resultType="com.study.bean.Dept">
         select * from dept where deptno = #{deptno}
     </select>
 
     <select id="getDeptAndEmpsByStep" resultMap="deptEmpByStep">
         select * from dept where deptno = #{deptno}
     </select>
-    <resultMap id="deptEmpByStep" type="com.mashibing.bean.Dept">
+    <resultMap id="deptEmpByStep" type="com.study.bean.Dept">
         <id property="deptno" column="deptno"></id>
         <result property="dname" column="dname"></result>
         <result property="loc" column="loc"></result>
@@ -41,7 +41,7 @@
             property：指定集合的属性
             ofType:指定集合中的元素类型
         -->
-        <collection property="emps" ofType="com.mashibing.bean.Emp" select="com.mashibing.dao.EmpDao.selectEmpByStep" column="deptno" >
+        <collection property="emps" ofType="com.study.bean.Emp" select="com.study.dao.EmpDao.selectEmpByStep" column="deptno" >
         </collection>
     </resultMap>
 </mapper>
