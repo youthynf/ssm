@@ -42,4 +42,13 @@ public class TestController {
         System.out.println(empByEmpno);
         return JSONObject.parseObject(JSONObject.toJSONString(empByEmpno));
     }
+
+    @RequestMapping("/selectEmpAndDept")
+    @ResponseBody
+    public JSONObject selectEmpAndDept(Integer id) {
+        System.out.println(id);
+        Emp emp = empDao.selectEmpAndDept(id);
+        System.out.println(emp);
+        return JSONObject.parseObject(JSONObject.toJSONString(emp));
+    }
 }

@@ -14,5 +14,6 @@
 <a href="/test">test</a><br />
 <a href="/getEmp?id=1">getEmp</a><br />
 <a href="/json?id=1">json</a><br />
+<a href="/selectEmpAndDept?id=1">json</a><br />
 </body>
 </html>

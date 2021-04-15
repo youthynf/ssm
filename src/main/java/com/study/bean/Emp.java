@@ -11,6 +11,7 @@ public class Emp {
     private Double sal;
     private Double comm;
     private Integer deptno;
+    private Dept dept;
 
     public Emp() {
     }
@@ -88,6 +89,14 @@ public class Emp {
 
     public void setDeptno(Integer deptno) {
         this.deptno = deptno;
+    }
+
+    public Dept getDept() {
+        return dept;
+    }
+
+    public void setDept(Dept dept) {
+        this.dept = dept;
     }
 
     @Override
