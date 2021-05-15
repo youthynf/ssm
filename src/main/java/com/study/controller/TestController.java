@@ -3,8 +3,10 @@ package com.study.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.study.bean.Emp;
 import com.study.dao.EmpDao;
+import com.study.util.Calculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,6 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class TestController {
     @Autowired
     EmpDao empDao;
+
+    @Autowired
+    Calculator calculator;
 
     @RequestMapping("/test")
     public String test() {
@@ -50,5 +55,12 @@ public class TestController {
         Emp emp = empDao.selectEmpAndDept(id);
         System.out.println(emp);
         return JSONObject.parseObject(JSONObject.toJSONString(emp));
+    }
+
+    @GetMapping("/aopTest")
+    public String aopTest() {
+        System.out.println("aop test......");
+        System.out.println(calculator.add(1, 3));;
+        return "aop";
     }
 }
