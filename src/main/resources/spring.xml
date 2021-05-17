@@ -50,4 +50,6 @@
         <property name="basePackage" value="com.study.dao"></property>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
     </bean>
+
+    <bean class="com.study.util.MyCalculator" id="myCalculator"></bean>
 </beans>
